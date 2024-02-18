@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+    postgres:
+      image: postgres:13
+      restart: always
+      volumes:
+        - pg_volume:/var/lib/postgresql/data/
+      environment:
+        - POSTGRES_USER=app
+        - POSTGRES_PASSWORD=123qwe
+        - POSTGRES_DB=blogs_db
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U app -d blogs_db" ]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+    backend:
+      build:
+        context: ./backend/app/
+      env_file:
+        - ./backend/app/.env
+      healthcheck:
+        test: [ "CMD", "curl", "--fail", "http://localhost:8000/api/openapi" ]
+        interval: 15s
+        timeout: 5s
+        retries: 5
+      ports:
+        - '8000:8000'
+      depends_on:
+        postgres:
+          condition: service_healthy
+ 
+volumes:
+    pg_volume:
+      name: pg_volume
