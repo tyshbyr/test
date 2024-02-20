@@ -12,7 +12,9 @@ config = context.config
 
 section = config.config_ini_section
 config.set_section_option(
-    section, "SQLALCHEMY_DATABASE_URL", app_config.sqlalchemy_database_url
+    section,
+    "SQLALCHEMY_DATABASE_URL",
+    app_config.sqlalchemy_database_url.replace("+asyncpg", ""),
 )
 
 # Interpret the config file for Python logging.
